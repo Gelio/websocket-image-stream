@@ -1,0 +1,19 @@
+{
+  "name": "websocket-image-stream",
+  "version": "1.0.0",
+  "description": "Websockets example image streaming server and client",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js production",
+    "dev": "node index.js development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gelio/websocket-image-stream"
+  },
+  "author": "Grzegorz Rozdzialik <voreny.gelio@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "websocket": "^1.0.22"
+  }
+}
