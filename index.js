@@ -1,9 +1,9 @@
-var WebSocketServer = require('websocket').server,
+var http = require('http'),
     express = require('express'),
-    fs = require('fs'),
-    url = require('url'),
-    config = require('./config.js');
-    app = express();
+    config = require('./config.js'),
+    websocketStreamer = require('./websocket-streamer.js'),
+    app = express(),
+    httpServer;
 
 if(process.argv[2] == 'production')
     config.port = process.env.PORT;     // for heroku, where server needs to listen on a specific port given via environment variable
@@ -19,8 +19,22 @@ app.use(function(req, res, next) {
     res.sendFile(__dirname + '/public/error404.html');
 });
 
+// Start the server and save a httpServer object
+httpServer = app.listen(config.port, 'localhost', function() {
+    console.log('Listening on ' + httpServer.address().address + ':' + config.port);
 
-// Start the server
-app.listen(config.port, function() {
-    console.log('Listening on port ', config.port);
+    websocketStreamer(httpServer);
 });
+
+
+/*
+    Alternative method if the previous one doesn't work
+
+    // Create a HTTP server in order to access that HTTPServer object
+    httpServer = http.createServer(app);
+
+    // Start the server
+    httpServer.listen(config.port, function() {
+    // copy the contents of the function above
+ });
+*/
