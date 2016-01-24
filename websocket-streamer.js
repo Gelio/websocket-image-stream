@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server,
     url = require('url');
+const EventEmitter = require('events');
 
 module.exports = function(httpServer) {
     var wsServer = new WebSocketServer({
@@ -38,9 +39,13 @@ function isOriginAllowed(origin, addressObj) {
 }
 
 function addEventsToConnection(connection) {
-    if(!connection.sendJSON) {
+    if(!connection.sendJSON && !connection.respond) {
         connection.sendJSON = function(dataObject) { this.send(JSON.stringify(dataObject)); };
+        connection.respond = function(type, dataObject) { this.sendJSON({type: type, utf8Data: dataObject}); };
     }
+
+    var socketEvents = new EventEmitter();
+    addOnMessageEvents(connection, socketEvents);
 
     connection.on('close', function(reasonCode, description) {
         console.log(connection.remoteAddress, 'disconnected');
@@ -53,7 +58,6 @@ function addEventsToConnection(connection) {
         }
 
         var dataSent = message.utf8Data;
-
         try {
             dataSent = JSON.parse(dataSent);
         } catch (e) {
@@ -61,17 +65,19 @@ function addEventsToConnection(connection) {
             return;
         }
 
-
-        switch(dataSent.type) {
-            case 'hello':
-                connection.sendJSON({type: 'world'});
-                break;
-
-            default:
-                connection.sendJSON({type: 'error', errorType: 'unknown message type'});
-                console.error(connection.remoteAddress + ' send an unknown message: ', message);
-                console.error('Parsed as:', dataSent);
-                break;
+        if(socketEvents.listeners(dataSent.type).length === 0) {
+            // Unknown event
+            connection.sendJSON({type: 'error', errorType: 'unknown message type'});
+            console.error(connection.remoteAddress + ' send an unknown message: ', message);
+            console.error('Parsed as:', dataSent);
         }
-    })
+        else
+            socketEvents.emit(dataSent.type, dataSent.utf8Data);  // send the message
+    });
+}
+
+function addOnMessageEvents(connection, socketEvents) {
+    socketEvents.on('hello', function() {
+        connection.respond('world', {text: 'what to say?'});
+    });
 }
