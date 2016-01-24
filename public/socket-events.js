@@ -2,7 +2,7 @@ var CustomSocketEvents = {
     validEvents: [
         'world'
     ],
-    addEvents: function() {
+    addEvents: function(socket) {
         socket.addEventListener('world', helloWorld);
 
 
