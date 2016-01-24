@@ -67,7 +67,7 @@ function addEventsToConnection(connection) {
 
         if(socketEvents.listeners(dataSent.type).length === 0) {
             // Unknown event
-            connection.sendJSON({type: 'error', errorType: 'unknown message type'});
+            connection.respond('error', {errorType: 'unknown message type'});
             console.error(connection.remoteAddress + ' send an unknown message: ', message);
             console.error('Parsed as:', dataSent);
         }

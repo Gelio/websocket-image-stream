@@ -16,6 +16,8 @@ window.addEventListener('load', function() {
         console.log('Server closed connection', event);
     };
 
+    CustomSocketEvents.addEvents(socket);    // add custom socket events
+
     socket.onmessage = function(event) {
         var dataReceived = event.data;
 
@@ -25,14 +27,15 @@ window.addEventListener('load', function() {
             console.error('Server sent a JSON invalid message', dataReceived);
         }
 
-        switch(dataReceived.type) {
-            case 'world':
-                console.log('Greeted with the server');
-                break;
-
-            default:
-                console.error('Unknown message type ' + dataReceived.type, dataReceived);
-                break;
+        if(CustomSocketEvents.isValidEvent(dataReceived.type)) {
+            var eventToSend = new CustomEvent(dataReceived.type, {
+                'detail': dataReceived
+            });
+            socket.dispatchEvent(eventToSend);
+        }
+        else {
+            // Invalid event name
+            console.error('Unknown message type ' + dataReceived.type, dataReceived);
         }
     };
 });
