@@ -25,6 +25,10 @@ module.exports = function(httpServer) {
 };
 
 function isOriginAllowed(origin, addressObj) {
+    // Always accept connections in development (allows for connecting via localhost and 127.0.0.1 interchangeably)
+    if(process.argv[2] == 'development')
+        return true;
+
     // Authorize only clients that connect via the same IP and port
     var originUrl = url.parse(origin);
 
