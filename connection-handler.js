@@ -1,5 +1,6 @@
 var WebSocketServer = require('websocket').server,
-    url = require('url');
+    url = require('url'),
+    Streamer = require('./streamer.js');
 const EventEmitter = require('events');
 
 module.exports = function(httpServer) {
@@ -22,6 +23,7 @@ module.exports = function(httpServer) {
         console.log(request.origin, 'accepted');
 
         addEventsToConnection(connection);
+        Streamer.addNewConnection(connection);
     });
 };
 

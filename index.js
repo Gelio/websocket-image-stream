@@ -1,9 +1,10 @@
 var http = require('http'),
     express = require('express'),
     config = require('./config.js'),
-    websocketStreamer = require('./websocket-streamer.js'),
+    connectionHandler = require('./connection-handler.js'),
     app = express(),
-    httpServer;
+    httpServer,
+    Streamer = require('./streamer.js');
 
 if(process.argv[2] == 'production')
     config.port = process.env.PORT;     // for heroku, where server needs to listen on a specific port given via environment variable
@@ -23,7 +24,12 @@ app.use(function(req, res) {
 httpServer = app.listen(config.port, 'localhost', function() {
     console.log('Listening on ' + httpServer.address().address + ':' + config.port);
 
-    websocketStreamer(httpServer);
+    Streamer.fetchFilesList().then(function() {
+        connectionHandler(httpServer);
+        console.log(Streamer.filesList);
+    }, function (error) {
+        console.error('Error', error);
+    });
 });
 
 
