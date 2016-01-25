@@ -5,7 +5,9 @@ var Streamer = {
     connectionList: [],
     filesList: [],
     addNewConnection: addNewConnection,
-    fetchFilesList: fetchFilesList
+    fetchFilesList: fetchFilesList,
+    beginFrameset: beginFrameset,
+    sendFrame: sendFrame
 };
 
 module.exports = Streamer;
@@ -42,4 +44,32 @@ function fetchFilesList() {
             resolve();
         });
     });
+}
+
+function beginFrameset() {
+    var i = 0,
+        self = this,
+        promiseToContinue = new Promise(0);
+
+    if(config.checkDataBeforeEachFrameset)
+        promiseToContinue = fetchFilesList();
+
+    promiseToContinue.then(function() {
+        if(self.filesList.length == 0) {
+            console.log('Nothing data to send, waiting ' + config.delayAfterNullData);
+            return setTimeout(self.beginFrameset, config.delayAfterNullData);
+        }
+
+
+    }, function (error) {
+        console.error('Error: ', error);
+    });
+}
+
+function sendFrame(i) {
+    // Set Timeout for next frame
+    //  if it's the last one then set timeout for beginFrameset
+    // Read file
+    // Send file to each connection
+    // Check if file should be deleted, delete if necessary
 }
