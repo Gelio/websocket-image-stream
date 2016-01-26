@@ -67,8 +67,16 @@ function beginFrameset() {
 }
 
 function sendFrame(i) {
-    // Set Timeout for next frame
-    //  if it's the last one then set timeout for beginFrameset
+    if(this.connectionList.length == 0)
+        return false;   // didn't send the frame, no listeners
+
+    if(i == this.filesList.length) {
+        // Set timeout for frameset
+    }
+    else {
+        // Set Timeout for next frame
+    }
+
     // Read file
     // Send file to each connection
     // Check if file should be deleted, delete if necessary
