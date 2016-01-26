@@ -55,6 +55,8 @@ function beginFrameset() {
     var self = this,
         promiseToContinue = new Promise(0);
 
+    console.log('Beginning frameset');
+
     if(config.checkDataBeforeEachFrameset)
         promiseToContinue = fetchFilesList();
 

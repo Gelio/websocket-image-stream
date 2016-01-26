@@ -17,6 +17,7 @@ window.addEventListener('load', function() {
     };
 
     CustomSocketEvents.addEvents(socket);    // add custom socket events
+    CustomSocketEvents.imageElement = document.querySelector('.stream');
 
     socket.onmessage = function(event) {
         var dataReceived = event.data;
