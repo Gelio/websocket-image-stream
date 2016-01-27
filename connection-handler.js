@@ -51,6 +51,10 @@ function addEventsToConnection(connection) {
 
     connection.on('close', function(reasonCode, description) {
         console.log(connection.remoteAddress, 'disconnected');
+
+        Streamer.connectionList.filter(function(currConn) {
+            return currConn !== connection; // delete disconnected client from the list
+        });
     });
 
     connection.on('message', function(message) {
@@ -81,5 +85,12 @@ function addEventsToConnection(connection) {
 function addOnMessageEvents(connection, socketEvents) {
     socketEvents.on('hello', function() {
         connection.respond('world', {text: 'what to say?'});
+    });
+
+    socketEvents.on('request-images', function() {
+        Streamer.addNewConnection(connection);
+
+        if(!Streamer.isStreaming)
+            Streamer.beginFrameset();
     });
 }
