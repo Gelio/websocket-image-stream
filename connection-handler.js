@@ -23,7 +23,7 @@ module.exports = function(httpServer) {
         console.log(request.origin, 'accepted');
 
         addEventsToConnection(connection);
-        Streamer.addNewConnection(connection);
+        //Streamer.addNewConnection(connection);
     });
 };
 

@@ -58,6 +58,9 @@ function beginFrameset() {
         promiseToContinue = new Promise(resolve => resolve());
 
     console.log('Beginning frameset');
+    if(this.framesetStart)
+        console.log('Previous one lasted', Date.now() - this.framesetStart, ' on average ', (Date.now() - this.framesetStart)/this.filesList.length);
+    this.framesetStart = Date.now();
 
     if(config.checkDataBeforeEachFrameset)
         promiseToContinue = fetchFilesList();
