@@ -1,37 +1,32 @@
-var http = require('http'),
-    express = require('express'),
-    config = require('./config.js'),
-    connectionHandler = require('./connection-handler.js'),
-    app = express(),
-    httpServer,
-    Streamer = require('./streamer.js');
+const express = require('express')
+const config = require('./config.js')
+const connectionHandler = require('./connection-handler.js')
+const app = express()
+const Streamer = require('./streamer.js')
+const path = require('path')
 
-if(process.argv[2] == 'production')
-    config.port = process.env.PORT;     // for heroku, where server needs to listen on a specific port given via environment variable
-
+if (process.argv[2] === 'production') { config.port = process.env.PORT || config.port || 8080 } // for heroku, where server needs to listen on a specific port given via environment variable
 
 // Serve files from the public directory
-app.use(express.static(__dirname + '/public'));
-
+app.use(express.static(path.join(__dirname, 'public')))
 
 // Handle 404 errors
-app.use(function(req, res) {
-    res.status(404);
-    res.sendFile(__dirname + '/public/error404.html');
-});
+app.use(function (req, res) {
+  res.status(404)
+  res.sendFile(path.join(__dirname, '/public/error404.html'))
+})
 
 // Start the server and save a httpServer object
-httpServer = app.listen(config.port, 'localhost', function() {
-    console.log('Listening on ' + httpServer.address().address + ':' + config.port);
+const httpServer = app.listen(config.port, 'localhost', function () {
+  console.log('Listening on http://' + httpServer.address().address + ':' + config.port + '/')
 
-    Streamer.fetchFilesList().then(function() {
-        connectionHandler(httpServer);
-        console.log(Streamer.filesList);
-    }, function (error) {
-        console.error('Error', error);
-    });
-});
-
+  Streamer.fetchFilesList().then(function () {
+    connectionHandler(httpServer)
+    console.log(Streamer.filesList)
+  }, function (error) {
+    console.error('Error', error)
+  })
+})
 
 /*
     Alternative method if the previous one doesn't work
